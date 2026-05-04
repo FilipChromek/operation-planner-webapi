@@ -1,0 +1,8 @@
+internal/or_planner/api_*
+internal/or_planner/model_*
+internal/or_planner/routers.go
+build/
+deployments/
+.git/
+.github/
+*.md

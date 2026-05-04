@@ -1,0 +1,12 @@
+internal/or_planner/README.md
+internal/or_planner/api_medical_staff.go
+internal/or_planner/api_operating_rooms.go
+internal/or_planner/api_patients.go
+internal/or_planner/api_scheduled_operations.go
+internal/or_planner/model_medical_staff.go
+internal/or_planner/model_medical_staff_availability_inner.go
+internal/or_planner/model_operating_room.go
+internal/or_planner/model_patient.go
+internal/or_planner/model_procedure_type.go
+internal/or_planner/model_scheduled_operation.go
+internal/or_planner/routers.go

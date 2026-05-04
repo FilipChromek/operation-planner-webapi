@@ -1,0 +1,14 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+.openapi.json
+or-planner-srv
+or-planner-srv.exe
+.idea
+.vscode
+node_modules
+.env.local

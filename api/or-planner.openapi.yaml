@@ -1,0 +1,600 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Operating Room Planner API
+  version: "1.0.0"
+  title: OR Planner API
+  contact:
+    email: filip.chromek@stuba.sk
+  license:
+    name: CC BY 4.0
+    url: "https://creativecommons.org/licenses/by/4.0/"
+
+tags:
+  - name: operatingRooms
+    description: Operating rooms management
+  - name: scheduledOperations
+    description: Operation scheduling
+  - name: patients
+    description: Patient registry
+  - name: medicalStaff
+    description: Medical staff registry
+
+paths:
+  /rooms:
+    get:
+      tags: [operatingRooms]
+      operationId: getRooms
+      summary: List all operating rooms
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OperatingRoom"
+              examples:
+                response:
+                  $ref: "#/components/examples/RoomsListExample"
+    post:
+      tags: [operatingRooms]
+      operationId: createRoom
+      summary: Create new operating room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OperatingRoom"
+            examples:
+              request:
+                $ref: "#/components/examples/RoomExample"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatingRoom"
+        "409":
+          description: Room with such id already exists
+
+  /rooms/{roomId}:
+    get:
+      tags: [operatingRooms]
+      operationId: getRoom
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Room detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatingRoom"
+        "404":
+          description: Not found
+    put:
+      tags: [operatingRooms]
+      operationId: updateRoom
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OperatingRoom"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OperatingRoom"
+        "404":
+          description: Not found
+
+  /rooms/{roomId}/operations:
+    get:
+      tags: [scheduledOperations]
+      operationId: getRoomOperations
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Operations in room
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScheduledOperation"
+              examples:
+                response:
+                  $ref: "#/components/examples/OperationsListExample"
+        "404":
+          description: Room not found
+    post:
+      tags: [scheduledOperations]
+      operationId: createOperation
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduledOperation"
+            examples:
+              request:
+                $ref: "#/components/examples/OperationExample"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledOperation"
+        "404":
+          description: Room not found
+        "409":
+          description: Time slot conflict or operation id exists
+
+  /rooms/{roomId}/operations/{opId}:
+    get:
+      tags: [scheduledOperations]
+      operationId: getOperation
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: opId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Operation detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledOperation"
+        "404":
+          description: Not found
+    put:
+      tags: [scheduledOperations]
+      operationId: updateOperation
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: opId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduledOperation"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScheduledOperation"
+        "404":
+          description: Not found
+    delete:
+      tags: [scheduledOperations]
+      operationId: deleteOperation
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema: { type: string }
+        - in: path
+          name: opId
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /patients:
+    get:
+      tags: [patients]
+      operationId: getPatients
+      responses:
+        "200":
+          description: Patient list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Patient"
+              examples:
+                response:
+                  $ref: "#/components/examples/PatientsListExample"
+    post:
+      tags: [patients]
+      operationId: createPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Patient"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "409":
+          description: Patient with such id exists
+
+  /patients/{patientId}:
+    get:
+      tags: [patients]
+      operationId: getPatient
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Patient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "404":
+          description: Not found
+    put:
+      tags: [patients]
+      operationId: updatePatient
+      parameters:
+        - in: path
+          name: patientId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Patient"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Patient"
+        "404":
+          description: Not found
+
+  /staff:
+    get:
+      tags: [medicalStaff]
+      operationId: getStaff
+      responses:
+        "200":
+          description: Staff list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MedicalStaff"
+              examples:
+                response:
+                  $ref: "#/components/examples/StaffListExample"
+    post:
+      tags: [medicalStaff]
+      operationId: createStaff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicalStaff"
+      responses:
+        "200":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalStaff"
+        "409":
+          description: Staff with such id exists
+
+  /staff/{staffId}:
+    get:
+      tags: [medicalStaff]
+      operationId: getStaffMember
+      parameters:
+        - in: path
+          name: staffId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Staff member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalStaff"
+        "404":
+          description: Not found
+    put:
+      tags: [medicalStaff]
+      operationId: updateStaffMember
+      parameters:
+        - in: path
+          name: staffId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MedicalStaff"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalStaff"
+        "404":
+          description: Not found
+
+components:
+  schemas:
+    OperatingRoom:
+      type: object
+      required: [id, number, name, status]
+      properties:
+        id: { type: string, example: "or-1" }
+        number: { type: string, example: "101" }
+        name: { type: string, example: "Operačná sála 1" }
+        type: { type: string, example: "general", description: "general, cardiac, orthopedic, etc." }
+        capacity: { type: integer, example: 6 }
+        equipment:
+          type: array
+          items: { type: string }
+          example: ["OR table", "Anesthesia machine", "Surgical lights"]
+        status:
+          type: string
+          enum: [active, maintenance, inactive]
+          example: active
+        scheduledOperations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduledOperation"
+        predefinedProcedures:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProcedureType"
+        archived:
+          type: boolean
+          default: false
+      example:
+        $ref: "#/components/examples/RoomExample"
+
+    ScheduledOperation:
+      type: object
+      required: [id, patientId, procedureType, scheduledStart, durationMinutes]
+      properties:
+        id: { type: string, example: "op-1" }
+        patientId: { type: string, example: "p-1" }
+        staffIds:
+          type: array
+          items: { type: string }
+          example: ["staff-1", "staff-2"]
+        procedureType: { type: string, example: "appendectomy" }
+        priority:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 3
+        scheduledStart:
+          type: string
+          format: date-time
+          example: "2038-12-24T10:00:00Z"
+        durationMinutes:
+          type: integer
+          example: 90
+        status:
+          type: string
+          enum: [planned, in-progress, completed, cancelled]
+          default: planned
+          example: planned
+        notes:
+          type: string
+          example: "Patient on warfarin — reverse before surgery"
+      example:
+        $ref: "#/components/examples/OperationExample"
+
+    ProcedureType:
+      type: object
+      required: [code, name]
+      properties:
+        code: { type: string, example: "appendectomy" }
+        name: { type: string, example: "Apendektómia" }
+        typicalDurationMinutes: { type: integer, example: 60 }
+
+    Patient:
+      type: object
+      required: [id, firstName, lastName, birthNumber]
+      properties:
+        id: { type: string, example: "p-1" }
+        firstName: { type: string, example: "Jozef" }
+        lastName: { type: string, example: "Mrkvička" }
+        birthNumber:
+          type: string
+          example: "850101/1234"
+          description: "Slovak birth number, slash optional"
+        contact: { type: string, example: "+421 900 000 000" }
+        insurance:
+          type: string
+          example: "VšZP"
+          description: "VšZP, Dôvera, Union"
+        archived:
+          type: boolean
+          default: false
+
+    MedicalStaff:
+      type: object
+      required: [id, firstName, lastName, role]
+      properties:
+        id: { type: string, example: "staff-1" }
+        firstName: { type: string, example: "Anna" }
+        lastName: { type: string, example: "Nováková" }
+        role:
+          type: string
+          enum: [doctor, nurse]
+          example: doctor
+        specialization: { type: string, example: "Chirurgia" }
+        availability:
+          type: array
+          items:
+            type: object
+            required: [from, to]
+            properties:
+              from: { type: string, format: date-time }
+              to: { type: string, format: date-time }
+        archived:
+          type: boolean
+          default: false
+
+  examples:
+    RoomExample:
+      summary: Sample operating room
+      value:
+        id: or-1
+        number: "101"
+        name: "Operačná sála 1"
+        type: general
+        capacity: 6
+        equipment: ["OR table", "Anesthesia machine", "Surgical lights"]
+        status: active
+        predefinedProcedures:
+          - code: appendectomy
+            name: "Apendektómia"
+            typicalDurationMinutes: 60
+          - code: cholecystectomy
+            name: "Cholecystektómia"
+            typicalDurationMinutes: 90
+          - code: hernia-repair
+            name: "Operácia prietrže"
+            typicalDurationMinutes: 75
+        scheduledOperations: []
+
+    RoomsListExample:
+      summary: Two rooms
+      value:
+        - id: or-1
+          number: "101"
+          name: "Operačná sála 1"
+          type: general
+          status: active
+          capacity: 6
+        - id: or-2
+          number: "102"
+          name: "Operačná sála 2"
+          type: cardiac
+          status: active
+          capacity: 8
+
+    OperationExample:
+      summary: Sample scheduled operation
+      value:
+        id: op-1
+        patientId: p-1
+        staffIds: [staff-1, staff-2]
+        procedureType: appendectomy
+        priority: 3
+        scheduledStart: "2038-12-24T10:00:00.000Z"
+        durationMinutes: 60
+        status: planned
+        notes: "Standard appendectomy"
+
+    OperationsListExample:
+      summary: List of scheduled operations
+      value:
+        - id: op-1
+          patientId: p-1
+          staffIds: [staff-1]
+          procedureType: appendectomy
+          priority: 3
+          scheduledStart: "2038-12-24T10:00:00.000Z"
+          durationMinutes: 60
+          status: planned
+        - id: op-2
+          patientId: p-2
+          staffIds: [staff-1, staff-2]
+          procedureType: cholecystectomy
+          priority: 2
+          scheduledStart: "2038-12-24T11:30:00.000Z"
+          durationMinutes: 90
+          status: planned
+
+    PatientsListExample:
+      summary: List of patients
+      value:
+        - id: p-1
+          firstName: Jozef
+          lastName: Mrkvička
+          birthNumber: "850101/1234"
+          contact: "+421 900 000 001"
+          insurance: VšZP
+        - id: p-2
+          firstName: Mária
+          lastName: Vrabcová
+          birthNumber: "905512/4321"
+          contact: "+421 905 000 002"
+          insurance: Dôvera
+
+    StaffListExample:
+      summary: List of staff
+      value:
+        - id: staff-1
+          firstName: Anna
+          lastName: Nováková
+          role: doctor
+          specialization: "Chirurgia"
+        - id: staff-2
+          firstName: Peter
+          lastName: Kováč
+          role: nurse
+          specialization: "Operačné sály"
