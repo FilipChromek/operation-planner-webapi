@@ -2,7 +2,6 @@ param (
   $command
 )
 
-
 if (-not $command) { $command = "start" }
 
 $ProjectRoot = "${PSScriptRoot}/.."
